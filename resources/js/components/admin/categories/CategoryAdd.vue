@@ -1,0 +1,249 @@
+<template>
+      <section class="main-form">
+    <div class="container-fluid">
+          <div class="card">
+            <div class="card-header fw-bold">
+              <span>
+                <button type="button" class="btn btn-secondary  bg-dark btn-sm" @click="BackHome">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+              </span>
+             تسجيل قسم 
+            </div>
+            
+              <!--bodyform-->
+             <div class="form-contant">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="name"> القسم : </label>
+                            <input type="text"
+                            :class="['form-control my-2' ,errors.name ?'is-invalid':'']" 
+                             id="name" placeholder="أدخل أسم القسم " name="name" v-model="form.name">
+                             <small class="text-white p-1 rounded  massege-error" v-if="errors.name">{{errors.name[0]}}</small>
+                          
+                        </div>
+                   
+                        <div class="col-md-6">
+                          <label for="meta_keywords"> Meta keywords :</label>
+                          <textarea class="form-control"
+                          :class="['form-control my-2' ,errors.meta_keywords ?'is-invalid':'']" 
+                          v-model="form.meta_keywords"
+                           placeholder="Meta keywords" cols="5" rows="5" maxlength="255" name="meta_keywords">
+    
+                        </textarea>
+                        <small class="text-white  p-1 rounded massege-error"
+                         v-if="errors.name">{{errors.meta_keywords[0]}}
+                        </small>
+                       
+                      </div>
+                        <div class="col-md-6">
+                          <label for="pwd">Meta Description :</label>
+                          <textarea class="form-control" 
+                          :class="['form-control my-2' ,errors.meta_description ?'is-invalid':'']" 
+                          v-model="form.meta_description"
+                          placeholder="Meta Description" cols="5" rows="5" maxlength="255" name="meta_description">
+    
+                        </textarea>
+                        <small class="text-white  p-1 rounded massege-error" 
+                        v-if="errors.name">{{errors.meta_description[0]}}</small>
+                
+                      </div>
+                    </div>
+                    <!--image uploads -->
+                    <div class="row mt-4" v-if="!form.imgpath">
+                     
+                      <input class="form-control form-control-lg" id="formFileLg" type="file" 
+                      placeholder="image"
+                      name="imgpath" @change='onFileChange' >
+                      <small class="text-white  p-1 rounded massege-error" v-if="errors.imgpath">{{errors.imgpath[0]}}</small>
+                 
+                    </div>
+
+                    <div class="row mt-4" v-else>
+                    
+                      <div class="mb-3 mt-4 text-center">
+                       <button type="button" class="btn btn-warning mt-2" @click="RemoveImage">تغير الصورة</button>
+                      </div>
+
+                      </div>
+                      <div class="row mt-4">
+                      <div class="col-md-12 text-center">
+                        <img class="rounded img-fluid img-thumbnail" v-bind:src="imagePreview ==null ? form.imgpath :imagePreview" width="200"   v-show="showPreview" />
+                  
+                      </div>
+                    </div>
+
+                  
+                </div>
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-footer">
+                        <button type="button" class="btn btn-save m-2" @click="AddNew">
+                          حفظ
+                          <i class="fa-regular fa-floppy-disk"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger"  @click="BackHome()">
+                         الغاء
+                          <i class="fa-solid fa-arrow-rotate-left"></i>
+                        </button>
+                      </div>
+                    </div>
+                    
+                      
+                  </div>
+                </div>
+             </div>
+
+               <!--./bodyform-->
+          
+           
+
+        </div>
+      </div>
+  
+   
+  </section>
+
+  </template>
+  
+  <script>
+  
+  
+  import Form from 'vform';
+  
+  export default {
+  
+    name:"CategoryAdd",
+   
+    data(){
+        return{
+           
+          
+            /**----- (images) ------*/
+            imagePreview: null,
+            imageUpdateMode: false,
+            showPreview: false,// hiden and show imags 
+                 /**----- (./images) ------*/
+            form: new Form({
+                id: '',
+                name: '',
+                imgpath: '',
+                meta_keywords:'',
+                meta_description:'',
+  
+            }),
+            search: '',
+            errors: [],
+           
+  
+        }
+    },
+    methods: {
+        
+                    ReloadPage() {
+                this.$router.go()
+            },
+                    BackHome() {
+                this.$router.push({
+                    name: 'category'
+                })
+            },
+  
+            RemoveImage() {
+            this.imageUpdateMode = false;
+            this.form.imgpath = '';
+            this.imagePreview=null;
+        },
+        onFileChange(event) {
+            /*
+            Set the local file variable to what the user has selected.
+            */
+            this.form.imgpath = event.target.files[0];
+  
+            /*
+            Initialize a File Reader object
+            */
+            let reader = new FileReader();
+  
+            /*
+            Add an event listener to the reader that when the file
+            has been loaded, we flag the show preview as true and set the
+            image to be what was read from the reader.
+            */
+            reader.addEventListener("load", function () {
+                this.showPreview = true;
+                this.imagePreview = reader.result;
+            }.bind(this), false);
+  
+            /*
+            Check to see if the file is not empty.
+            */
+            if (this.form.imgpath) {
+                /*
+                    Ensure the file is an image file.
+                */
+                if (/\.(jpe?g|png|gif)$/i.test(this.form.imgpath.name)) {
+  
+                    console.log("here");
+                    /*
+                    Fire the readAsDataURL method which will read the file in and
+                    upon completion fire a 'load' event which we will listen to and
+                    display the image in the preview.
+                    */
+                    reader.readAsDataURL(this.form.imgpath);
+                }
+            }
+        },
+
+  
+          AddNew()
+           {
+            let formData = new FormData();
+  
+            formData.append("name", this.form.name);
+            formData.append("meta_keywords", this.form.meta_keywords);
+            formData.append("meta_description", this.form.meta_description);
+            formData.append("imgpath", this.form.imgpath);
+  
+            axios.post('api/AddCatogory', formData)
+                .then((response) => {
+                    // console.log(res);
+                    if (response.data.status == 'error') {
+                        this.errors = response.data.errors
+                    } else if (response.data.status == 200) {
+                        Swal.fire({
+                            title: 'تم الحفظ بنجاح',
+                            text: "success",
+                            icon: 'success',
+                        });
+                       
+                        this.errors = []
+                    
+                        this.form.name = ''
+                   
+               
+                this.form.meta_keywords=''
+                this.form.meta_description=''
+                this.RemoveImage()
+                     
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+           },
+  
+       
+  
+       
+  
+  
+    },
+   
+   
+  
+  }
+  </script>
+  
